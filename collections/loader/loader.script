@@ -1,0 +1,62 @@
+local monarch = require "monarch.monarch"
+local druid = require("druid.druid")
+local polyglot = require("m.stuff.polyglot")
+local defsave = require("defsave.defsave")
+
+function detect_language()
+	if html5 then
+		
+	else
+		local info = sys.get_sys_info()
+		if info.device_language == "ru" then
+			--polyglot.set_language("Russian")
+		elseif info.device_language == "tr" then
+            --polyglot.set_language("Turkey")
+		end
+	end
+end
+
+function firebase_init()
+    if firebase then
+        local ok, err = firebase.init()
+        if not ok then
+            print(err)
+            return
+		end
+
+		firebase.analytics.init()
+	    --firebase.analytics.log_string("fisrt_launch", "storm")
+        
+        -- firebase is ready to use!
+    end
+end
+
+function save_init()
+    defsave.enable_obfuscation = true
+	--defsave.appname = "your_name"
+	defsave.load("c")
+end
+
+function init(self)
+    firebase_init()
+    save_init()
+    polyglot.import("/assets/bundles/polyglot.csv")
+    polyglot.set_language("English")
+	detect_language()
+    druid.set_default_style(require("m.stuff.style"))
+
+	if not html5 then
+		--defos.set_fullscreen(true)
+		--defos.set_cursor_visible(true)
+	end
+
+	timer.delay(0, false, function (self, handle, time_elapsed)
+        monarch.show("menu")
+    end)
+
+    msg.post("@render:", hash("clear_color"), { color = vmath.vector4(0, 0, 0, 1) })
+end
+
+function final(self)
+
+end

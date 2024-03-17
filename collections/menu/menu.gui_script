@@ -1,0 +1,40 @@
+local monarch = require "monarch.monarch"
+local druid = require("druid.druid")
+local transitions_custom = require("m.stuff.transitions")
+local transitions = require "monarch.transitions.gui"
+
+function playClick()
+    --monarch.show("game", { sequential = true })
+end
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    self.druid = druid.new(self)
+    local transition = transitions.create()
+    transitions_custom.apply_black_transitions(transition, gui.get_node("black"), 0.3)
+    monarch.on_transition("menu", transition)
+
+    local play1_btn = self.druid:new_button("btn_play_area", playClick, nil, gui.get_node("btn_play"))
+    
+    local btn_with_sound = self.druid:new_button("btn_play_area2", playClick)
+    btn_with_sound.anim_node = gui.get_node("btn_play2")
+    btn_with_sound.sound = msg.url("loader:/sounds#btn_click")
+end
+
+function final(self)
+    msg.post(".", "release_input_focus")
+    self.druid:final()
+end
+
+function on_message(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+    monarch.on_message(message_id, message, sender)
+end
+
+function on_input(self, action_id, action)
+    return self.druid:on_input(action_id, action)
+end
+
+function update(self, dt)
+    self.druid:update(dt)
+end
